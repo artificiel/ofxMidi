@@ -156,6 +156,16 @@ public:
 	void sendMidiByte(unsigned char byte);
 	void sendMidiBytes(std::vector<unsigned char> &bytes);
 	
+	template<typename... Args>
+	void sendMidiSysex(Args&&... args) {
+		std::vector<unsigned char> message;
+		message.reserve(sizeof...(args) + 2);  
+		message.push_back(MIDI_SYSEX);
+		(message.push_back(static_cast<unsigned char>(std::forward<Args>(args))), ...);
+		message.push_back(MIDI_SYSEX_END);
+		sendMidiBytes(message);
+	}
+
 /// \section Sending Stream Interface
 	
 	/// MIDI events
